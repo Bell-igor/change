@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ED1941">
+<title>СМЕНА — твой первый вкус в «Очаково»</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="phone">
+  <div class="app">
+
+    <!-- ───────────── TOPBAR ───────────── -->
+    <header class="topbar" id="topbar" hidden>
+      <button class="icon-btn" id="btn-back" aria-label="Назад">←</button>
+      <div class="topbar-center">
+        <div class="shift-label" id="shift-label">Смена 1 из 6</div>
+        <div class="dots" id="dots"></div>
+      </div>
+      <div class="score" id="score" title="Баллы">0</div>
+    </header>
+
+    <main id="main">
+
+      <!-- ───────────── SPLASH ───────────── -->
+      <section class="screen active" id="s-splash">
+        <div class="hero">
+          <img class="hero-pattern" src="assets/img/pattern2.jpg" alt="">
+          <div class="hero-inner">
+            <div class="brand-line">
+              <span class="brand-word">ОЧАКОВО</span>
+              <span class="brand-sub">натуральные напитки</span>
+            </div>
+            <h1 class="title-xl">СМЕНА</h1>
+            <p class="hero-lead">6 смен на настоящем производстве,<br>которые превращаются в твой первый вкус.</p>
+            <div class="hero-meta">
+              <span>18+</span><span>6 смен · ~9 минут</span><span>практика и стажировка</span>
+            </div>
+          </div>
+        </div>
+        <div class="pad">
+          <button class="btn btn-primary" data-go="s-track">Пройти первую смену →</button>
+          <button class="btn btn-ghost" data-go="s-form">Я уже знаю, куда хочу</button>
+
+          <div class="mini-cards">
+            <button class="mini-card" data-go="s-board"><b>Рейтинг вузов</b><span>кто прошёл дальше всех</span></button>
+            <button class="mini-card" data-go="s-mentor"><b>Наставник</b><span>пре-бординг на практике</span></button>
+          </div>
+
+          <div class="quote">
+            «Очаково» сегодня — одно из самых современных предприятий России: 10 производств,
+            собственные солодовни и виноградники, поставки в 60 регионов и 30 стран.
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── TRACK ───────────── -->
+      <section class="screen" id="s-track">
+        <div class="pad">
+          <div class="kicker">Смена 1 · выбор трека</div>
+          <h2 class="title-l">Кем ты будешь<br>на этой смене?</h2>
+          <p class="lead">Трек меняет задания и рекомендованную вакансию.
+            Все смены можно пройти любым треком — так ты увидишь производство целиком.</p>
+          <div id="track-list" class="track-list"></div>
+          <p class="note">Берём на практику и стажировку только с 18 лет. Суммы — до вычета НДФЛ, с ночными сменами больше.</p>
+        </div>
+      </section>
+
+      <!-- ───────────── HISTORY ───────────── -->
+      <section class="screen" id="s-history">
+        <div class="pad">
+          <div class="kicker" id="hist-kicker">Смена 1 · история</div>
+          <h2 class="title-l">С чего всё началось</h2>
+          <p class="lead">Сопоставь год и событие. Ошибка не страшна — просто попробуй снова.</p>
+          <div id="hist-list" class="hist-list"></div>
+          <div id="hist-next" class="sticky-next" hidden>
+            <button class="btn btn-primary" data-go="s-line">Дальше: линия розлива →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── LINE ───────────── -->
+      <section class="screen" id="s-line">
+        <div class="pad">
+          <div class="kicker">Смена 2 · производство</div>
+          <h2 class="title-l">Пульт линии розлива</h2>
+          <p class="lead">Одна из четырёх станций вышла за пределы регламента. Найди её и останови линию до брака.</p>
+          <div id="line-grid" class="console"></div>
+          <div class="hint" id="line-hint"></div>
+          <div id="line-next" class="sticky-next" hidden>
+            <div class="result-line" id="line-result"></div>
+            <button class="btn btn-primary" data-go="s-quality">Дальше: лаборатория →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── QUALITY ───────────── -->
+      <section class="screen" id="s-quality">
+        <div class="pad">
+          <div class="kicker">Смена 3 · лаборатория</div>
+          <h2 class="title-l">Приёмка партии</h2>
+          <p class="lead">Три пробы из технологического цеха. Одна не проходит регламент — какая партия пойдёт на розлив, а какую вернём?</p>
+          <div id="qual-grid" class="qual-grid"></div>
+          <div class="hint" id="qual-hint"></div>
+          <div id="qual-next" class="sticky-next" hidden>
+            <div class="result-line" id="qual-result"></div>
+            <button class="btn btn-primary" data-go="s-flavor">Дальше: лаборатория вкуса →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── FLAVOR LAB ───────────── -->
+      <section class="screen" id="s-flavor">
+        <div class="pad">
+          <div class="kicker">Смена 4 · создание вкуса</div>
+          <h2 class="title-l">Лаборатория вкуса</h2>
+          <p class="lead">Выбери основу и три ингредиента. Получи вкус, которого ещё нет в линейке, — и карточку, которой можно похвастаться.</p>
+
+          <div class="field-label">1. Основа</div>
+          <div id="base-list" class="chips"></div>
+
+          <div class="field-label">2. Три ингредиента <span id="ing-count" class="muted">(0/3)</span></div>
+          <div id="ing-list" class="chips"></div>
+
+          <button class="btn btn-primary" id="btn-create" disabled>Создать вкус</button>
+          <div id="flavor-result"></div>
+        </div>
+      </section>
+
+      <!-- ───────────── QUIZ ───────────── -->
+      <section class="screen" id="s-quiz">
+        <div class="pad">
+          <div class="kicker">Смена 5 · контрольный блок</div>
+          <h2 class="title-l">Пять вопросов<br>о компании</h2>
+          <p class="lead">Именно этот блок входит в требования кейса: проверяем, что ты узнал о «Очаково» за смены.</p>
+          <div class="quiz-progress" id="quiz-progress"></div>
+          <div id="quiz-body"></div>
+          <div id="quiz-next" class="sticky-next" hidden>
+            <button class="btn btn-primary" data-go="s-final">Дальше: итоги смены →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── FINAL ───────────── -->
+      <section class="screen" id="s-final">
+        <div class="pad">
+          <div class="kicker">Смена 6 · итоги</div>
+          <div id="final-body"></div>
+        </div>
+      </section>
+
+      <!-- ───────────── FORM ───────────── -->
+      <section class="screen" id="s-form">
+        <div class="pad">
+          <div class="kicker">Заявка</div>
+          <h2 class="title-l">Записаться на практику</h2>
+          <p class="lead">Оплачиваемая практика с марта по август: лаборатория, цех розлива, технологический цех, складской комплекс.
+            Официальное трудоустройство по ТК РФ, спецодежда и медосмотр за счёт компании, общежитие за 50%.</p>
+
+          <form id="lead-form" novalidate>
+            <label class="field">
+              <span>ФИО *</span>
+              <input name="fio" type="text" autocomplete="name" placeholder="Иванова Анна Сергеевна">
+              <em class="err"></em>
+            </label>
+            <label class="field">
+              <span>Телефон *</span>
+              <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67">
+              <em class="err"></em>
+            </label>
+            <label class="field">
+              <span>Дата рождения * <i class="muted">(только 18+)</i></span>
+              <input name="dob" type="date">
+              <em class="err"></em>
+            </label>
+            <label class="field">
+              <span>Вуз / колледж *</span>
+              <input name="uni" type="text" placeholder="МГУПП">
+              <em class="err"></em>
+            </label>
+            <div class="row">
+              <label class="field">
+                <span>Курс</span>
+                <select name="course">
+                  <option>1</option><option>2</option><option>3</option><option selected>4</option>
+                  <option>5</option><option>Выпускник</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Город</span>
+                <select name="city">
+                  <option selected>Москва</option><option>Московская область</option><option>Другой регион</option>
+                </select>
+              </label>
+            </div>
+            <label class="field">
+              <span>Интересующая вакансия *</span>
+              <select name="vacancy" id="vacancy-select"></select>
+              <em class="err"></em>
+            </label>
+            <label class="field">
+              <span>Готовность выйти *</span>
+              <select name="ready">
+                <option>На практику с марта</option>
+                <option>В течение 2 недель</option>
+                <option>В течение месяца</option>
+                <option>К высокому сезону (лето)</option>
+                <option>Пока просто присматриваюсь</option>
+              </select>
+              <em class="err"></em>
+            </label>
+            <label class="check">
+              <input type="checkbox" name="consent">
+              <span>Согласен на обработку персональных данных и получение сообщений от наставника</span>
+            </label>
+            <em class="err check-err" id="consent-err"></em>
+
+            <button class="btn btn-primary" type="submit">Отправить заявку →</button>
+            <p class="note">Демо-режим прототипа: заявка сохраняется локально в браузере и видна в «Пульте HR».
+              В продуктивной версии уходит в CRM/Битрикс24 компании.</p>
+          </form>
+        </div>
+      </section>
+
+      <!-- ───────────── DONE ───────────── -->
+      <section class="screen" id="s-done">
+        <div class="pad">
+          <div class="done-badge">✓</div>
+          <h2 class="title-l">Заявка принята</h2>
+          <div id="done-body"></div>
+          <button class="btn btn-primary" data-go="s-mentor">Открыть чек-лист наставника →</button>
+          <button class="btn btn-ghost" data-go="s-board">Посмотреть рейтинг вузов</button>
+          <button class="btn btn-ghost" data-go="s-hr">Пульт HR (для экспертов)</button>
+        </div>
+      </section>
+
+      <!-- ───────────── BOARD ───────────── -->
+      <section class="screen" id="s-board">
+        <div class="pad">
+          <div class="kicker">Рейтинг</div>
+          <h2 class="title-l">Битва вузов</h2>
+          <p class="lead">Средний балл за смены. Приз для тройки лидеров — экскурсия по производству с дегустацией и мерч «Очаково».</p>
+          <div id="board-body"></div>
+        </div>
+      </section>
+
+      <!-- ───────────── MENTOR ───────────── -->
+      <section class="screen" id="s-mentor">
+        <div class="pad">
+          <div class="kicker">После заявки</div>
+          <h2 class="title-l">Наставник</h2>
+          <p class="lead">Пока ждёшь ответа HR — собери документы и разберись с бытом. Это снимает половину стресса первого дня
+            и заметно снижает риск не пройти испытательный срок.</p>
+          <div id="mentor-body"></div>
+          <div class="quote">Телефонный справочник: учебный центр 8 800 100 77 77 (доб. 1244 или 3105),
+            отдел кадров 8 800 100 77 77 (доб. 1234), общежитие 8 495 446 42 55, здравоохранение (доб. 1370).</div>
+        </div>
+      </section>
+
+      <!-- ───────────── HR ───────────── -->
+      <section class="screen" id="s-hr">
+        <div class="pad">
+          <div class="kicker">Для экспертов и HR</div>
+          <h2 class="title-l">Пульт HR</h2>
+          <p class="lead">Одна панель на всё: воронка, стоимость заявки, очередь кандидатов.
+            Ниже — модель пилота на 6 недель (демо-данные) и реальные заявки, сделанные в этом прототипе.</p>
+          <div id="hr-body"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <span>Прототип · хакатон «Открой Моспром» · кейс «Очаково»</span>
+      <span>v1.0</span>
+    </footer>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

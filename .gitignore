@@ -1,0 +1,9 @@
+# системный мусор
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# временные файлы сборки и превью
+_site/
+*.tmp
+~$*.pptx
