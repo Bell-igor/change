@@ -9,6 +9,24 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
+  /* ---------------- тема оформления ---------------- */
+  // Палитра собрана на дополнительных цветах брендбука «Очаково».
+  const THEMES = ['green', 'water', 'graphite'];
+  const themeParam = new URLSearchParams(location.search).get('theme');
+  const THEME = THEMES.includes(themeParam) ? themeParam : 'green';
+  document.documentElement.dataset.theme = THEME;
+
+  const cssVar = (name, fallback) =>
+    (getComputedStyle(document.documentElement).getPropertyValue(name) || '').trim() || fallback;
+
+  const rgba = (hex, alpha) => {
+    const h = hex.replace('#', '').trim();
+    const full = h.length === 3 ? h.split('').map(ch => ch + ch).join('') : h;
+    const n = parseInt(full, 16);
+    if (isNaN(n)) return 'rgba(0,0,0,' + alpha + ')';
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + alpha + ')';
+  };
+
   const LS_STATE = 'och_smena_v1';
   const LS_LEADS = 'och_leads_v1';
   const LS_CHECK = 'och_checklist_v1';
@@ -507,21 +525,26 @@
     c.width = 1080; c.height = 1350;
     const x = c.getContext('2d');
 
+    // цвета берём из активной темы, чтобы карточка совпадала с интерфейсом
+    const hero1 = cssVar('--c-hero-1', '#4E9B2E');
+    const hero2 = cssVar('--c-hero-2', '#2E6517');
+    const onHero = cssVar('--c-on-hero', '#FFFFFF');
+
     const g = x.createLinearGradient(0, 0, 1080, 1350);
-    g.addColorStop(0, '#ED1941');
-    g.addColorStop(1, '#9E0A24');
+    g.addColorStop(0, hero1);
+    g.addColorStop(1, hero2);
     x.fillStyle = g;
     x.fillRect(0, 0, 1080, 1350);
 
     // узор
-    x.fillStyle = 'rgba(255,255,255,.10)';
+    x.fillStyle = rgba(onHero, 0.12);
     for (let i = 0; i < 28; i++) {
       for (let j = 0; j < 36; j++) {
         if ((i + j) % 3 === 0) x.fillRect(26 + i * 38, 26 + j * 38, 7, 7);
       }
     }
 
-    x.fillStyle = '#fff';
+    x.fillStyle = onHero;
     x.font = '800 40px Inter, Arial, sans-serif';
     x.fillText('ОЧАКОВО', 72, 118);
     x.globalAlpha = .8;
@@ -555,13 +578,14 @@
       x.globalAlpha = .85;
       x.fillText(labels[i], 72, y);
       x.globalAlpha = 1;
-      x.fillStyle = 'rgba(255,255,255,.28)';
+      x.fillStyle = rgba(onHero, 0.28);
       x.fillRect(300, y - 18, 700, 12);
-      x.fillStyle = '#fff';
+      x.fillStyle = onHero;
       x.fillRect(300, y - 18, 700 * (v / 10), 12);
       y += 58;
     });
 
+    x.fillStyle = onHero;
     x.font = '600 26px Inter, Arial, sans-serif';
     x.fillText('Состав: ' + f.ings.map(g => g.name.toLowerCase()).join(' · '), 72, 1140);
     x.globalAlpha = .75;
@@ -882,6 +906,9 @@
   $('#topbar').style.display = 'none';
   $('#score').textContent = state.points;
 
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.setAttribute('content', cssVar('--c-hero-1', '#4E9B2E'));
+
   /* ---------------- демо-режим и прямые ссылки ---------------- */
   // index.html?demo=1#s-final — заполненное состояние для показа и скриншотов
   function restoreProgress() {
@@ -1039,7 +1066,11 @@
       renderFlavorResult();
     }
     go(target, false);
-    // браузер прыгает к якорю #s-... — возвращаем наверх
-    setTimeout(() => window.scrollTo(0, 0), 80);
   }
+
+  // браузер прыгает к якорю #s-... — возвращаем страницу наверх
+  const toTop = () => window.scrollTo(0, 0);
+  window.addEventListener('load', toTop);
+  window.addEventListener('hashchange', toTop);
+  setTimeout(toTop, 80);
 })();
