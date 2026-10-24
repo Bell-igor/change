@@ -191,6 +191,7 @@
 
   const SEQ = ['s-track', 's-history', 's-line', 's-quality', 's-flavor', 's-quiz'];
   const LABELS = {
+    's-start': 'Знакомство',
     's-track': 'Смена 1 из 6',
     's-history': 'Смена 1 из 6',
     's-line': 'Смена 2 из 6',
@@ -208,6 +209,8 @@
   /* ---------------- состояние ---------------- */
 
   const fresh = {
+    contact: null,          // имя, телефон, дата рождения — берём в начале
+    draftId: null,          // черновик заявки в «Пульте HR»
     track: null,
     points: 0,
     done: { track: false, history: false, line: false, quality: false, flavor: false, quiz: false },
@@ -219,6 +222,7 @@
   let state = load(LS_STATE, fresh);
   let stack = [];
   let current = 's-splash';
+  let contactReturn = 's-splash';   // откуда пришли на экран знакомства
 
   function load(k, fb) {
     try {
@@ -247,6 +251,7 @@
 
   function go(id, push = true) {
     if (!document.getElementById(id)) return;
+    if (id === 's-start' && current !== 's-start') contactReturn = current;
     if (push && current !== id) stack.push(current);
     $$('.screen').forEach(s => s.classList.toggle('active', s.id === id));
     current = id;
@@ -261,8 +266,12 @@
     if (id === 's-final') renderFinal();
     if (id === 's-board') renderBoard();
     if (id === 's-hr') renderHR();
-    if (id === 's-form') renderVacancies();
+    if (id === 's-form') { renderVacancies(); renderContactSlot(); }
     if (id === 's-mentor') renderMentor();
+    if (id === 's-start') fillContactForm();
+
+    // контакт уже собран — обновляем черновик в «Пульте HR»
+    if (state.contact && id !== 's-splash') syncDraft();
   }
 
   function back() {
@@ -699,56 +708,188 @@
     return !msg;
   }
 
-  function submitLead(e) {
-    e.preventDefault();
-    const f = e.target;
-    const fio = f.fio.value.trim();
-    const phone = f.phone.value.trim();
-    const dob = f.dob.value;
-    const uni = f.uni.value.trim();
+  /* ---------------- контакты (шаг 1) ---------------- */
+
+  function readContact(form) {
+    const fio = form.fio.value.trim();
+    const phone = form.phone.value.trim();
+    const dob = form.dob.value;
     const digits = phone.replace(/\D/g, '');
     const a = age(dob);
     let ok = true;
 
-    ok = setErr(f.fio, fio.split(/\s+/).length < 2 ? 'Укажи фамилию и имя' : '') && ok;
-    ok = setErr(f.phone, digits.length < 10 ? 'Нужен телефон из 10–11 цифр' : '') && ok;
-    ok = setErr(f.dob, a < 18 ? 'Берём только с 18 лет' : a > 60 ? 'Проверь дату рождения' : '') && ok;
-    ok = setErr(f.uni, uni.length < 2 ? 'Укажи вуз или колледж' : '') && ok;
-    const consentErr = $('#consent-err');
-    if (!f.consent.checked) { consentErr.textContent = 'Нужно согласие на обработку данных'; ok = false; }
-    else consentErr.textContent = '';
+    ok = setErr(form.fio, fio.split(/\s+/).length < 2 ? 'Напиши имя и фамилию' : '') && ok;
+    ok = setErr(form.phone, digits.length < 10 ? 'Нужен телефон из 10–11 цифр' : '') && ok;
+    ok = setErr(form.dob, a < 18 ? 'Берём только с 18 лет' : a > 60 ? 'Проверь дату рождения' : '') && ok;
 
-    if (!ok) return;
+    const box = form.querySelector('.check-err');
+    const check = form.consent ? form.consent.closest('.check') : null;
+    if (!form.consent || !form.consent.checked) {
+      if (box) box.textContent = 'Без согласия не можем принять данные';
+      if (check) check.classList.add('bad');
+      ok = false;
+    } else {
+      if (box) box.textContent = '';
+      if (check) check.classList.remove('bad');
+    }
 
-    const track = TRACKS.find(t => t.id === state.track) || TRACKS[1];
-    const lead = {
-      id: 'ОЧ-' + Date.now().toString(36).toUpperCase().slice(-6),
+    if (!ok) return null;
+    return { fio, phone, dob, age: a, consent: true };
+  }
+
+  function submitContact(e) {
+    e.preventDefault();
+    const data = readContact(e.target);
+    if (!data) return;
+    state.contact = data;
+    persist();
+    syncDraft();
+    go(contactReturn === 's-form' ? 's-form' : 's-track', false);
+  }
+
+  function fillContactForm() {
+    const f = $('#contact-form');
+    if (!f || !state.contact) return;
+    f.fio.value = state.contact.fio;
+    f.phone.value = state.contact.phone;
+    f.dob.value = state.contact.dob;
+    f.consent.checked = true;
+
+    const btn = f.querySelector('button[type="submit"]');
+    const note = $('#start-note');
+    const editing = !!state.lead || contactReturn === 's-form';
+    if (btn) {
+      btn.textContent = editing ? 'Сохранить и вернуться к заявке' : 'Начать смены →';
+    }
+    if (note) {
+      note.textContent = editing
+        ? 'Поправил контакты — и возвращайся к заявке. Данные не передаются третьим лицам.'
+        : 'Дальше — 6 смен по 40–90 секунд. В конце останется только выбрать вуз и вакансию. Данные не передаются третьим лицам.';
+    }
+  }
+
+  /* ---------------- черновик заявки (виден в «Пульте HR») ---------------- */
+
+  function draftProgress() {
+    return ['track', 'history', 'line', 'quality', 'flavor', 'quiz']
+      .filter(k => state.done[k]).length;
+  }
+
+  function syncDraft(extra) {
+    if (!state.contact) return null;
+    const leads = load(LS_LEADS, []);
+    if (!state.draftId) state.draftId = 'ОЧ-' + Date.now().toString(36).toUpperCase().slice(-6);
+
+    const track = TRACKS.find(t => t.id === state.track);
+    const progress = draftProgress();
+    const item = Object.assign({
+      id: state.draftId,
       createdAt: new Date().toISOString(),
-      fio, phone, dob, age: a, uni,
-      course: f.course.value,
-      city: f.city.value,
-      vacancy: f.vacancy.value,
-      ready: f.ready.value,
-      track: track.name,
+      stage: state.lead ? 'application' : (progress ? 'shift' : 'contact'),
+      fio: state.contact.fio,
+      phone: state.contact.phone,
+      dob: state.contact.dob,
+      age: state.contact.age,
+      track: track ? track.name : '—',
+      progress: progress,
       points: state.points,
       quiz: state.quizScore + '/' + QUIZ.length,
       flavor: state.flavor ? state.flavor.name : null,
       consent: true
-    };
+    }, extra || {});
 
-    const leads = load(LS_LEADS, []);
-    leads.unshift(lead);
+    const i = leads.findIndex(l => l.id === state.draftId);
+    if (i >= 0) leads[i] = Object.assign({}, leads[i], item);
+    else leads.unshift(Object.assign({ uni: '', course: '', city: '', vacancy: '', ready: '' }, item));
+
     save(LS_LEADS, leads);
+    persist();
+    return leads.find(l => l.id === state.draftId);
+  }
+
+  /* ---------------- заявка (шаг 3) ---------------- */
+
+  function renderContactSlot() {
+    const slot = $('#contact-slot');
+    if (!slot) return;
+
+    if (state.contact) {
+      slot.innerHTML = `
+        <div class="contact-card">
+          <div class="cc-top"><span>Связаться с тобой</span>
+            <button type="button" class="cc-edit" id="cc-edit">изменить</button></div>
+          <div class="cc-name">${state.contact.fio}</div>
+          <div class="cc-meta">${state.contact.phone} · ${state.contact.age} лет</div>
+        </div>`;
+      $('#cc-edit').addEventListener('click', () => go('s-start'));
+      return;
+    }
+
+    slot.innerHTML = `
+      <div class="contact-card contact-card--empty">
+        <div class="cc-top"><span>Связаться с тобой</span></div>
+        <p class="cc-hint">Заполни один раз — этого достаточно, чтобы HR ответил по заявке.</p>
+        <form id="contact-inline" novalidate>
+          <label class="field"><span>Имя и фамилия *</span>
+            <input name="fio" type="text" autocomplete="name" placeholder="Анна Иванова"><em class="err"></em></label>
+          <label class="field"><span>Телефон *</span>
+            <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67"><em class="err"></em></label>
+          <label class="field"><span>Дата рождения * <i class="muted">(только 18+)</i></span>
+            <input name="dob" type="date"><em class="err"></em></label>
+          <label class="check"><input type="checkbox" name="consent">
+            <span>Согласен на обработку персональных данных и сообщения от наставника</span></label>
+          <em class="err check-err"></em>
+          <button class="btn btn-primary" type="submit">Сохранить контакты</button>
+        </form>
+      </div>`;
+
+    $('#contact-inline').addEventListener('submit', ev => {
+      ev.preventDefault();
+      const data = readContact(ev.target);
+      if (!data) return;
+      state.contact = data;
+      persist();
+      syncDraft();
+      renderContactSlot();
+    });
+  }
+
+  function submitLead(e) {
+    e.preventDefault();
+    const f = e.target;
+
+    if (!state.contact) {
+      const inline = $('#contact-inline');
+      if (!inline) return;
+      const data = readContact(inline);
+      if (!data) return;
+      state.contact = data;
+      persist();
+    }
+
+    const uni = f.uni.value.trim();
+    if (!setErr(f.uni, uni.length < 2 ? 'Укажи вуз или колледж' : '')) return;
+
+    const lead = syncDraft({
+      stage: 'application',
+      uni,
+      course: f.course.value,
+      city: f.city.value,
+      vacancy: f.vacancy.value,
+      ready: f.ready.value
+    });
+
     state.lead = lead;
     persist();
 
     $('#done-body').innerHTML = `
-      <p class="lead">Заявка №${lead.id} ушла в отдел подбора. Наставник напишет в течение рабочего дня
-        и пришлёт ссылку на чек-лист первого дня.</p>
+      <p class="lead">Заявка №${lead.id} ушла в отдел подбора. Наставник напишет на ${lead.phone}
+        в течение рабочего дня и пришлёт ссылку на чек-лист первого дня.</p>
       <div class="ticket">
         <div class="t-row"><span>Заявка</span><b>№${lead.id}</b></div>
         <div class="t-row"><span>Кандидат</span><b>${lead.fio}</b></div>
         <div class="t-row"><span>Вакансия</span><b>${lead.vacancy}</b></div>
+        <div class="t-row"><span>Вуз</span><b>${lead.uni}</b></div>
         <div class="t-row"><span>Трек</span><b>${lead.track}</b></div>
         <div class="t-row"><span>Готовность выйти</span><b>${lead.ready}</b></div>
         <div class="t-row"><span>Результат игры</span><b>${lead.points} баллов · квиз ${lead.quiz}</b></div>
@@ -833,14 +974,28 @@
           </div>`).join('')}
       </div>
 
-      <div class="field-label">Заявки из прототипа: ${leads.length}</div>
-      ${leads.length ? leads.map(l => `
-        <div class="lead-item">
-          <b>${l.fio}</b> · ${l.age} лет<br>
-          <span>${l.uni}, ${l.course} курс · ${l.city}</span>
-          <div class="l-meta">${l.vacancy} · ${l.ready} · ${l.points} баллов · квиз ${l.quiz}</div>
-          <span class="tag">${l.track} · №${l.id}</span>
-        </div>`).join('') : '<p class="note">Пока пусто — пройди игру и оставь заявку, она появится здесь.</p>'}
+      <div class="field-label">Заявки и контакты из прототипа: ${leads.length}</div>
+      ${leads.length ? leads.map(l => {
+        const app = l.stage === 'application';
+        const stageText = app
+          ? 'заявка'
+          : l.progress
+            ? `в игре · смена ${Math.min(l.progress + 1, 6)} из 6`
+            : 'только контакты';
+        const sub = app
+          ? `${l.uni}, ${l.course} курс · ${l.city}`
+          : 'прошёл знакомство, игру не закончил';
+        const details = app
+          ? `${l.vacancy} · ${l.ready} · ${l.points} баллов · квиз ${l.quiz}`
+          : `${l.points} баллов · квиз ${l.quiz} · трек: ${l.track}`;
+        return `
+        <div class="lead-item ${app ? '' : 'draft'}">
+          <b>${l.fio}</b> · ${l.age} лет · ${l.phone}<br>
+          <span>${sub}</span>
+          <div class="l-meta">${details}</div>
+          <span class="tag ${app ? '' : 'tag--draft'}">${stageText} · №${l.id}</span>
+        </div>`;
+      }).join('') : '<p class="note">Пока пусто — пройди игру и оставь заявку, она появится здесь.</p>'}
 
       <button class="btn btn-ghost" id="btn-export">Выгрузить заявки в JSON</button>
       <button class="btn btn-ghost" id="btn-reset">Сбросить демо-данные</button>
@@ -877,12 +1032,14 @@
 
   $('#btn-back').addEventListener('click', back);
   $('#btn-create').addEventListener('click', renderFlavorResult);
+  $('#contact-form').addEventListener('submit', submitContact);
   $('#lead-form').addEventListener('submit', submitLead);
 
-  // подсказки в поле телефона
-  $('#lead-form').phone.addEventListener('input', e => {
-    let v = e.target.value.replace(/[^\d+]/g, '');
-    e.target.value = v;
+  // в телефоне оставляем только цифры и «+»
+  document.addEventListener('input', e => {
+    if (e.target && e.target.matches && e.target.matches('input[name="phone"]')) {
+      e.target.value = e.target.value.replace(/[^\d+]/g, '');
+    }
   });
 
   /* ---------------- старт ---------------- */
@@ -947,9 +1104,18 @@
       ings: ['Имбирь', 'Облепиха', 'Мята'],
       profile: [4, 3, 4, 6]
     };
+    state.contact = {
+      fio: 'Иванова Анна Сергеевна',
+      phone: '+7 999 000-00-00',
+      dob: '2004-05-14',
+      age: 22,
+      consent: true
+    };
+    state.draftId = 'ОЧ-7F2K1A';
     state.lead = {
       id: 'ОЧ-7F2K1A',
       createdAt: new Date().toISOString(),
+      stage: 'application',
       fio: 'Иванова Анна Сергеевна',
       phone: '+7 999 000-00-00',
       dob: '2004-05-14',
@@ -960,6 +1126,7 @@
       vacancy: 'Химик-лаборант (от 60 000 ₽)',
       ready: 'На практику с марта',
       track: 'Технолог / химик-лаборант',
+      progress: 6,
       points: 245,
       quiz: '5/5',
       flavor: 'Имбирный квас',
@@ -971,14 +1138,17 @@
     if (!leads.length) {
       save(LS_LEADS, [state.lead, {
         id: 'ОЧ-6C1B9D', createdAt: new Date(Date.now() - 36e5).toISOString(),
-        fio: 'Петров Максим', age: 21, uni: 'РХТУ им. Д. И. Менделеева', course: '3',
+        stage: 'application',
+        fio: 'Петров Максим', phone: '+7 916 111-22-33', age: 21,
+        uni: 'РХТУ им. Д. И. Менделеева', course: '3',
         city: 'Москва', vacancy: 'Оператор линии розлива (от 70 000 ₽)',
-        ready: 'В течение 2 недель', track: 'Инженер', points: 210, quiz: '4/5'
+        ready: 'В течение 2 недель', track: 'Инженер', progress: 6, points: 210, quiz: '4/5'
       }, {
         id: 'ОЧ-5A8H2C', createdAt: new Date(Date.now() - 72e5).toISOString(),
-        fio: 'Ким Алиса', age: 19, uni: 'Политехнический колледж им. П. А. Овчинникова', course: '2',
-        city: 'Московская область', vacancy: 'Оператор склада (от 60 000 ₽)',
-        ready: 'К высокому сезону (лето)', track: 'Оператор / склад', points: 168, quiz: '3/5'
+        stage: 'shift',
+        fio: 'Ким Алиса', phone: '+7 903 444-55-66', age: 19,
+        uni: '', course: '', city: '', vacancy: '', ready: '',
+        track: 'Оператор / склад', progress: 2, points: 55, quiz: '0/5'
       }]);
     }
   }
@@ -993,6 +1163,18 @@
       el.click();
       return el;
     };
+    go('s-start', false);
+    const cf = $('#contact-form');
+    if (cf) {
+      cf.fio.value = 'Тестов Тест Тестович';
+      cf.phone.value = '+7 999 000 11 22';
+      cf.dob.value = '2003-04-05';
+      cf.consent.checked = true;
+      cf.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    } else {
+      log.push('MISS #contact-form');
+    }
+
     go('s-track', false);
     click('#track-list .track[data-track="tech"]');
     go('s-history', false);
@@ -1018,11 +1200,7 @@
     });
     go('s-form', false);
     const f = $('#lead-form');
-    f.fio.value = 'Тестов Тест Тестович';
-    f.phone.value = '+7 999 000 11 22';
-    f.dob.value = '2003-04-05';
     f.uni.value = 'МГТУ им. Баумана';
-    f.consent.checked = true;
     f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 
     const leads = load(LS_LEADS, []);

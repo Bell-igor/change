@@ -344,6 +344,28 @@ main{flex:1 0 auto;position:relative}
 .lead-item .l-meta{color:var(--c-muted);font-size:11.5px;margin-top:4px}
 .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:var(--c-brand-soft);color:var(--c-brand-text);border-radius:6px;padding:3px 7px;margin-top:6px}
 
+/* черновики в пульте HR */
+.lead-item.draft{border-style:dashed;background:transparent}
+.tag--draft{background:var(--c-accent-soft);color:var(--c-accent)}
+
+/* ── три шага на главной ── */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2px 0 16px}
+.step{background:var(--c-soft);border:1px solid var(--c-line);border-radius:14px;padding:10px 10px 12px}
+.step b{display:block;font-size:11px;font-weight:900;color:var(--c-brand-text);margin-bottom:6px}
+.step span{display:block;font-size:12px;font-weight:700;line-height:1.2}
+.step em{display:block;font-style:normal;font-size:10.5px;color:var(--c-muted);margin-top:3px;font-weight:500;line-height:1.25}
+
+/* ── карточка контактов на шаге заявки ── */
+.contact-card{border:1px solid var(--c-line);border-radius:18px;padding:14px;background:var(--c-soft);margin:0 0 16px}
+.contact-card--empty{background:transparent;border-style:dashed}
+.cc-top{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--c-muted);margin-bottom:8px}
+.cc-edit{border:0;background:none;color:var(--c-brand-text);font-family:var(--font);font-size:11px;font-weight:800;letter-spacing:0;text-transform:none;cursor:pointer;padding:2px}
+.cc-name{font-size:15px;font-weight:800;letter-spacing:-.01em}
+.cc-meta{font-size:12px;color:var(--c-ink2);margin-top:3px}
+.cc-hint{font-size:12px;color:var(--c-ink2);margin:0 0 10px;line-height:1.4}
+.contact-card--empty .btn{margin-top:4px}
+.check.bad span{color:var(--c-danger)}
+
 .footer{
   display:flex;justify-content:space-between;gap:10px;flex:0 0 auto;
   padding:14px 20px 18px;border-top:1px solid var(--c-line);

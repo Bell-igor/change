@@ -40,8 +40,14 @@
           </div>
         </div>
         <div class="pad">
-          <button class="btn btn-primary" data-go="s-track">Пройти первую смену →</button>
-          <button class="btn btn-ghost" data-go="s-form">Я уже знаю, куда хочу</button>
+          <div class="steps">
+            <div class="step"><b>1</b><span>Знакомство<em>30 секунд</em></span></div>
+            <div class="step"><b>2</b><span>6 смен<em>около 9 минут</em></span></div>
+            <div class="step"><b>3</b><span>Заявка<em>контакты уже есть</em></span></div>
+          </div>
+
+          <button class="btn btn-primary" data-go="s-start">Начать смену →</button>
+          <button class="btn btn-ghost" data-go="s-form">Пропустить игру и оставить заявку</button>
 
           <div class="mini-cards">
             <button class="mini-card" data-go="s-board"><b>Рейтинг вузов</b><span>кто прошёл дальше всех</span></button>
@@ -55,10 +61,47 @@
         </div>
       </section>
 
+      <!-- ───────────── START (контакты сразу) ───────────── -->
+      <section class="screen" id="s-start">
+        <div class="pad">
+          <div class="kicker">Шаг 1 из 3 · знакомство</div>
+          <h2 class="title-l">Как с тобой<br>связаться?</h2>
+          <p class="lead">Три поля — и можно играть. HR напишет тебе после смен,
+            даже если ты не дойдёшь до финала: заявка не потеряется.</p>
+
+          <form id="contact-form" novalidate>
+            <label class="field">
+              <span>Имя и фамилия *</span>
+              <input name="fio" type="text" autocomplete="name" placeholder="Анна Иванова">
+              <em class="err"></em>
+            </label>
+            <label class="field">
+              <span>Телефон *</span>
+              <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67">
+              <em class="err"></em>
+            </label>
+            <label class="field">
+              <span>Дата рождения * <i class="muted">(только 18+)</i></span>
+              <input name="dob" type="date">
+              <em class="err"></em>
+            </label>
+            <label class="check">
+              <input type="checkbox" name="consent">
+              <span>Согласен на обработку персональных данных и сообщения от наставника</span>
+            </label>
+            <em class="err check-err" id="contact-consent-err"></em>
+
+            <button class="btn btn-primary" type="submit">Начать смены →</button>
+            <p class="note" id="start-note">Дальше — 6 смен по 40–90 секунд. В конце останется только выбрать вуз и вакансию.
+              Данные не передаются третьим лицам.</p>
+          </form>
+        </div>
+      </section>
+
       <!-- ───────────── TRACK ───────────── -->
       <section class="screen" id="s-track">
         <div class="pad">
-          <div class="kicker">Смена 1 · выбор трека</div>
+          <div class="kicker">Шаг 2 из 3 · выбор трека</div>
           <h2 class="title-l">Кем ты будешь<br>на этой смене?</h2>
           <p class="lead">Трек меняет задания и рекомендованную вакансию.
             Все смены можно пройти любым треком — так ты увидишь производство целиком.</p>
@@ -153,27 +196,14 @@
       <!-- ───────────── FORM ───────────── -->
       <section class="screen" id="s-form">
         <div class="pad">
-          <div class="kicker">Заявка</div>
-          <h2 class="title-l">Записаться на практику</h2>
-          <p class="lead">Оплачиваемая практика с марта по август: лаборатория, цех розлива, технологический цех, складской комплекс.
-            Официальное трудоустройство по ТК РФ, спецодежда и медосмотр за счёт компании, общежитие за 50%.</p>
+          <div class="kicker">Шаг 3 из 3 · заявка</div>
+          <h2 class="title-l">Записаться<br>на практику</h2>
+          <p class="lead">Оплачиваемая практика с марта по август: лаборатория, цех розлива, технологический цех,
+            складской комплекс. ТК РФ, спецодежда и медосмотр за счёт компании, общежитие за 50%.</p>
+
+          <div id="contact-slot"></div>
 
           <form id="lead-form" novalidate>
-            <label class="field">
-              <span>ФИО *</span>
-              <input name="fio" type="text" autocomplete="name" placeholder="Иванова Анна Сергеевна">
-              <em class="err"></em>
-            </label>
-            <label class="field">
-              <span>Телефон *</span>
-              <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67">
-              <em class="err"></em>
-            </label>
-            <label class="field">
-              <span>Дата рождения * <i class="muted">(только 18+)</i></span>
-              <input name="dob" type="date">
-              <em class="err"></em>
-            </label>
             <label class="field">
               <span>Вуз / колледж *</span>
               <input name="uni" type="text" placeholder="МГУПП">
@@ -210,11 +240,6 @@
               </select>
               <em class="err"></em>
             </label>
-            <label class="check">
-              <input type="checkbox" name="consent">
-              <span>Согласен на обработку персональных данных и получение сообщений от наставника</span>
-            </label>
-            <em class="err check-err" id="consent-err"></em>
 
             <button class="btn btn-primary" type="submit">Отправить заявку →</button>
             <p class="note">Демо-режим прототипа: заявка сохраняется локально в браузере и видна в «Пульте HR».
