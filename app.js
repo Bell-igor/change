@@ -11,9 +11,9 @@
 
   /* ---------------- тема оформления ---------------- */
   // Палитра собрана на дополнительных цветах брендбука «Очаково».
-  const THEMES = ['green', 'water', 'graphite'];
+  const THEMES = ['green', 'water', 'graphite', 'graphite-blue'];
   const themeParam = new URLSearchParams(location.search).get('theme');
-  const THEME = THEMES.includes(themeParam) ? themeParam : 'green';
+  const THEME = THEMES.includes(themeParam) ? themeParam : 'graphite-blue';
   document.documentElement.dataset.theme = THEME;
 
   const cssVar = (name, fallback) =>
@@ -907,7 +907,7 @@
   $('#score').textContent = state.points;
 
   const metaTheme = document.querySelector('meta[name="theme-color"]');
-  if (metaTheme) metaTheme.setAttribute('content', cssVar('--c-hero-1', '#4E9B2E'));
+  if (metaTheme) metaTheme.setAttribute('content', cssVar('--c-hero-1', '#0086D6'));
 
   /* ---------------- демо-режим и прямые ссылки ---------------- */
   // index.html?demo=1#s-final — заполненное состояние для показа и скриншотов
