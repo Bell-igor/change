@@ -1,132 +1,10 @@
 /* ===== СМЕНА · прототип мини-аппа «Очаково» =====
-   Палитра собрана на дополнительных цветах брендбука:
-   лайм #84BD00, тёмно-зелёный #509E2F, голубой #0086D6, серый #A2AAAD.
-   Темы переключаются атрибутом data-theme на <html>: green (по умолчанию), water, graphite.
+   Тёмная палитра на фирменных цветах брендбука:
+   синий #0086D6, графит, серый #A2AAAD; красный #D50032 — только ошибки.
    ================================================ */
 
-:root,
-html[data-theme="green"]{
-  /* фирменные */
-  --c-brand:#4E9B2E;
-  --c-brand-dark:#3A7421;
-  --c-brand-text:#2F6B18;      /* читаемый зелёный на белом */
-  --c-brand-rgb:78,155,46;
-  --c-brand-soft:#EAF4E1;
-  --c-on-brand:#FFFFFF;
-
-  --c-accent:#84BD00;          /* лайм — прогресс, акценты */
-  --c-accent-soft:#F2F8DC;
-  --c-accent-ink:#2E3C0B;
-
-  /* главная кнопка */
-  --c-cta-bg:#84BD00;
-  --c-cta-ink:#1E2807;
-  --c-cta-rgb:132,189,0;
-
-  /* поверхности */
-  --c-bg:#F6F7F1;
-  --c-surface:#FFFFFF;
-  --c-soft:#F0F4E8;
-  --c-line:#E1E6D8;
-
-  /* текст */
-  --c-ink:#16201A;
-  --c-ink2:#4B554C;
-  --c-muted:#8A948B;
-
-  /* статусы */
-  --c-ok:#2E7D32;
-  --c-ok-soft:#E9F5EA;
-  --c-ok-line:#B9DDBB;
-  --c-danger:#D50032;
-  --c-danger-soft:#FFF1F4;
-  --c-danger-line:#F0C0CB;
-
-  /* герой и карточка вкуса */
-  --c-hero-1:#4E9B2E;
-  --c-hero-2:#2E6517;
-  --c-on-hero:#FFFFFF;
-  --c-card-dots:rgba(255,255,255,.12);
-}
-
-html[data-theme="water"]{
-  --c-brand:#0086D6;
-  --c-brand-dark:#00649F;
-  --c-brand-text:#00639B;
-  --c-brand-rgb:0,134,214;
-  --c-brand-soft:#E6F2FB;
-  --c-on-brand:#FFFFFF;
-
-  --c-accent:#84BD00;
-  --c-accent-soft:#F2F8DC;
-  --c-accent-ink:#2E3C0B;
-
-  --c-cta-bg:#0086D6;
-  --c-cta-ink:#FFFFFF;
-  --c-cta-rgb:0,134,214;
-
-  --c-bg:#F4F7FA;
-  --c-surface:#FFFFFF;
-  --c-soft:#EDF3F8;
-  --c-line:#DDE6ED;
-
-  --c-ink:#0F1B24;
-  --c-ink2:#47565F;
-  --c-muted:#86949D;
-
-  --c-ok:#2E7D32;
-  --c-ok-soft:#E9F5EA;
-  --c-ok-line:#B9DDBB;
-  --c-danger:#D50032;
-  --c-danger-soft:#FFF1F4;
-  --c-danger-line:#F0C0CB;
-
-  --c-hero-1:#0086D6;
-  --c-hero-2:#005483;
-  --c-on-hero:#FFFFFF;
-  --c-card-dots:rgba(255,255,255,.16);
-}
-
-html[data-theme="graphite"]{
-  --c-brand:#84BD00;
-  --c-brand-dark:#6C9C00;
-  --c-brand-text:#AFE03C;
-  --c-brand-rgb:132,189,0;
-  --c-brand-soft:#26301A;
-  --c-on-brand:#10140A;
-
-  --c-accent:#A2AAAD;
-  --c-accent-soft:#242B2E;
-  --c-accent-ink:#E7EBEC;
-
-  --c-cta-bg:#84BD00;
-  --c-cta-ink:#10140A;
-  --c-cta-rgb:132,189,0;
-
-  --c-bg:#111517;
-  --c-surface:#1A2023;
-  --c-soft:#222A2D;
-  --c-line:#2E3A3E;
-
-  --c-ink:#F1F4F5;
-  --c-ink2:#BAC3C7;
-  --c-muted:#87949A;
-
-  --c-ok:#4CAF50;
-  --c-ok-soft:#1D2A1F;
-  --c-ok-line:#33503A;
-  --c-danger:#FF5A7A;
-  --c-danger-soft:#2B1A1F;
-  --c-danger-line:#5A2A36;
-
-  --c-hero-1:#84BD00;
-  --c-hero-2:#4E7400;
-  --c-on-hero:#10140A;
-  --c-card-dots:rgba(16,20,10,.10);
-}
-
-/* графит + фирменный синий (без зелёного) */
-html[data-theme="graphite-blue"]{
+:root{
+  /* фирменный синий */
   --c-brand:#0086D6;
   --c-brand-dark:#00649F;
   --c-brand-text:#6FC4F2;
@@ -142,15 +20,18 @@ html[data-theme="graphite-blue"]{
   --c-cta-ink:#FFFFFF;
   --c-cta-rgb:0,134,214;
 
+  /* поверхности */
   --c-bg:#0F1418;
   --c-surface:#1A2126;
   --c-soft:#212A30;
   --c-line:#2C373D;
 
+  /* текст */
   --c-ink:#F1F4F6;
   --c-ink2:#BAC4C9;
   --c-muted:#88959C;
 
+  /* статусы */
   --c-ok:#4CAF50;
   --c-ok-soft:#1C2A20;
   --c-ok-line:#33503A;
@@ -158,6 +39,7 @@ html[data-theme="graphite-blue"]{
   --c-danger-soft:#2B1A20;
   --c-danger-line:#5A2A38;
 
+  /* герой и карточка вкуса */
   --c-hero-1:#0086D6;
   --c-hero-2:#0A3555;
   --c-on-hero:#FFFFFF;
@@ -241,10 +123,8 @@ main{flex:1 0 auto;position:relative}
 .hero{position:relative;background:linear-gradient(158deg,var(--c-hero-1),var(--c-hero-2));overflow:hidden}
 .hero-pattern{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:.14;filter:grayscale(1) contrast(1.1);
+  opacity:.08;filter:grayscale(1) contrast(1.1);
 }
-html[data-theme="graphite"] .hero-pattern{opacity:.09}
-html[data-theme="graphite-blue"] .hero-pattern{opacity:.08}
 .hero-inner{position:relative;padding:26px 22px 30px;color:var(--c-on-hero)}
 .brand-line{display:flex;align-items:baseline;gap:10px;margin-bottom:26px}
 .brand-word{font-weight:900;letter-spacing:.02em;font-size:17px}
@@ -352,9 +232,7 @@ html[data-theme="graphite-blue"] .hero-pattern{opacity:.08}
   padding:10px 14px;font-family:var(--font);font-size:13px;font-weight:700;
   cursor:pointer;color:var(--c-ink);
 }
-.chip.on{background:var(--c-ink);border-color:var(--c-ink);color:var(--c-surface)}
-html[data-theme="graphite"] .chip.on,
-html[data-theme="graphite-blue"] .chip.on{background:var(--c-brand-soft);border-color:var(--c-brand);color:var(--c-brand-text)}
+.chip.on{background:var(--c-brand-soft);border-color:var(--c-brand);color:var(--c-brand-text)}
 .chip.sel{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-on-brand)}
 .field-label{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--c-ink2);margin-top:6px}
 
@@ -370,14 +248,11 @@ html[data-theme="graphite-blue"] .chip.on{background:var(--c-brand-soft);border-
 .flavor-card .fc-ings span{font-size:11px;border:1px solid currentColor;border-radius:99px;padding:5px 9px;opacity:.85}
 .profile{display:grid;gap:8px;margin-top:16px}
 .p-bar{display:grid;grid-template-columns:82px 1fr 34px;align-items:center;gap:8px;font-size:11px}
-.p-bar .p-track{height:6px;background:rgba(255,255,255,.28);border-radius:99px;overflow:hidden;display:block}
-html[data-theme="graphite"] .p-bar .p-track{background:rgba(16,20,10,.22)}
+.p-bar .p-track{height:6px;background:rgba(255,255,255,.24);border-radius:99px;overflow:hidden;display:block}
 .p-bar .p-track i{display:block;height:100%;background:currentColor;border-radius:99px}
 .fc-actions{display:flex;gap:8px;margin-top:16px}
 .fc-actions .btn{margin-top:0;font-size:13px;padding:12px}
-.btn-white{background:var(--c-surface);color:var(--c-brand-text)}
-html[data-theme="graphite"] .btn-white{background:var(--c-ink);color:var(--c-bg)}
-html[data-theme="graphite-blue"] .btn-white{background:#FFFFFF;color:var(--c-brand-dark)}
+.btn-white{background:#FFFFFF;color:var(--c-brand-dark)}
 .btn-outline{background:transparent;color:inherit;border:1px solid currentColor;opacity:.9}
 
 /* ── quiz ── */

@@ -9,13 +9,8 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-  /* ---------------- тема оформления ---------------- */
-  // Палитра собрана на дополнительных цветах брендбука «Очаково».
-  const THEMES = ['green', 'water', 'graphite', 'graphite-blue'];
-  const themeParam = new URLSearchParams(location.search).get('theme');
-  const THEME = THEMES.includes(themeParam) ? themeParam : 'graphite-blue';
-  document.documentElement.dataset.theme = THEME;
-
+  /* ---------------- цвета ---------------- */
+  // Палитра живёт в CSS-переменных (см. styles.css): графит + фирменный синий.
   const cssVar = (name, fallback) =>
     (getComputedStyle(document.documentElement).getPropertyValue(name) || '').trim() || fallback;
 
